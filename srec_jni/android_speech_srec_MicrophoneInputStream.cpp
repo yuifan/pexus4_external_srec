@@ -28,6 +28,8 @@
 #include <media/AudioRecord.h>
 #include <media/mediarecorder.h>
 
+#include <system/audio.h>
+
 #include <jni.h>
 
 using namespace android;
@@ -55,18 +57,18 @@ static JNIEXPORT jint JNICALL Java_android_speech_srec_Recognizer_AudioRecordNew
         (JNIEnv *env, jclass clazz, jint sampleRate, jint fifoFrames) {
 
     android::AudioRecord* ar = new android::AudioRecord(
-            android::AUDIO_SOURCE_VOICE_RECOGNITION, sampleRate,
-            android::AudioSystem::PCM_16_BIT, android::AudioSystem::CHANNEL_IN_MONO,
-            fifoFrames, 0);
+            AUDIO_SOURCE_VOICE_RECOGNITION, sampleRate,
+            AUDIO_FORMAT_PCM_16_BIT, AUDIO_CHANNEL_IN_MONO,
+            fifoFrames);
     if (ar == NULL) {
-        LOGE("Error creating AudioRecord");
+        ALOGE("Error creating AudioRecord");
     }
     else {
         status_t s = ar->initCheck();
         if (s != NO_ERROR) {
             delete ar;
             ar = NULL;
-            LOGE("initCheck error %d ", s);
+            ALOGE("initCheck error %d ", s);
         }
     }
     return (int)ar;
@@ -92,9 +94,7 @@ static JNIEXPORT jint JNICALL Java_android_speech_srec_Recognizer_AudioRecordRea
 
 static JNIEXPORT void JNICALL Java_android_speech_srec_Recognizer_AudioRecordStop
         (JNIEnv *env, jclass clazz, jint audioRecord) {
-    if (int rtn = ((AudioRecord*)audioRecord)->stop()) {
-        throwException(env, "java/io/IOException", "AudioRecord::stop failed %d", rtn);
-    }
+    ((AudioRecord*)audioRecord)->stop();
 }
 
 static JNIEXPORT void JNICALL Java_android_speech_srec_Recognizer_AudioRecordDelete
@@ -127,19 +127,19 @@ jint register_android_speech_srec_MicrophoneInputStream(JavaVM* vm, void* reserv
     const char* className = "android/speech/srec/MicrophoneInputStream";
 
     if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) {
-        LOGE("ERROR: GetEnv failed\n");
+        ALOGE("ERROR: GetEnv failed\n");
         return -1;
     }
     assert(env != NULL);
 
     clazz = env->FindClass(className);
     if (clazz == NULL) {
-        LOGE("Native registration unable to find class '%s'\n", className);
+        ALOGE("Native registration unable to find class '%s'\n", className);
         return -1;
     }
     if (env->RegisterNatives(clazz, gMethods,
             sizeof(gMethods) / sizeof(gMethods[0])) < 0) {
-        LOGE("RegisterNatives failed for '%s'\n", className);
+        ALOGE("RegisterNatives failed for '%s'\n", className);
         return -1;
     }
 

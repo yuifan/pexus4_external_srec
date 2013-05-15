@@ -44,6 +44,7 @@ LOCAL_SHARED_LIBRARIES := \
   libhardware_legacy \
   libcutils \
   libmedia \
+  libmedia_native
 
 
 LOCAL_STATIC_LIBRARIES := \
@@ -70,5 +71,6 @@ LOCAL_LDLIBS += -lpthread
 
 LOCAL_MODULE := libsrec_jni
 
-include $(BUILD_SHARED_LIBRARY)
+LOCAL_MODULE_TAGS := optional
 
+include $(BUILD_SHARED_LIBRARY)

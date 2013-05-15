@@ -503,7 +503,7 @@ static JNIEXPORT jobjectArray JNICALL Java_android_speech_srec_Recognizer_SR_1Re
     }
 
     // create String[] of keys
-    jclass stringClass = env->FindClass("[Ljava/lang/String;");
+    jclass stringClass = env->FindClass("java/lang/String");
     if (!stringClass) return NULL;
     jobjectArray array = env->NewObjectArray(listSize, stringClass, NULL);
     if (!array) return NULL;
@@ -616,19 +616,19 @@ jint register_android_speech_srec_Recognizer(JavaVM* vm, void* reserved)
     const char* className = "android/speech/srec/Recognizer";
 
     if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) {
-        LOGE("ERROR: GetEnv failed\n");
+        ALOGE("ERROR: GetEnv failed\n");
         return -1;
     }
     assert(env != NULL);
 
     clazz = env->FindClass(className);
     if (clazz == NULL) {
-        LOGE("Native registration unable to find class '%s'\n", className);
+        ALOGE("Native registration unable to find class '%s'\n", className);
         return -1;
     }
     if (env->RegisterNatives(clazz, gMethods,
             sizeof(gMethods) / sizeof(gMethods[0])) < 0) {
-        LOGE("RegisterNatives failed for '%s'\n", className);
+        ALOGE("RegisterNatives failed for '%s'\n", className);
         return -1;
     }
 
